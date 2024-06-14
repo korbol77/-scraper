@@ -17,7 +17,17 @@ if len(args) != 1:
 
 url = args[0]
 
-req = requests.get(url)
+valid_url = url.startswith(("https://", "http://"))
+
+if not valid_url:
+    print(f"{Colors.BRIGHT_RED}Url address is not correct!\nEnter a valid url like: https://example.com{Colors.RESET}")
+    sys.exit(1)
+
+try:
+    req = requests.get(url)
+except:
+    print(f"{Colors.BRIGHT_RED}Error while trying to connect to the website!{Colors.RESET}")
+    sys.exit(1)
 
 if req.status_code != 200:
     print(f"{Colors.BRIGHT_RED}Error while scraping the page!{Colors.RESET}")
@@ -38,11 +48,13 @@ print(f"\n{Colors.BOLD}{Colors.BRIGHT_GREEN}<<< Emails >>>{Colors.RESET}")
 for i, email in enumerate(emails):
     print(f"  ({Colors.BOLD}{Colors.BRIGHT_BLUE}{i + 1}{Colors.RESET}) {Colors.BRIGHT_BLUE}{email}{Colors.RESET}")
 
-save_emails = input(f"\nSave emails to file? (y/n): ")
+save_emails = input(f"\nSave emails to file? (Y/n): ")
 
-if save_emails == "y":
+if save_emails.lower() in ["y", "yes"]:
     current_time = time.strftime("%H:%M:%S_%d-%m-%Y")
 
     with open(f"e_scraper({current_time}).txt", "w") as file:
+        file.write(f"<-< e_scraper >->\n({current_time})\n")
+
         for email in emails:
             file.write(f"{email}\n")
