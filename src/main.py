@@ -7,6 +7,15 @@ import re
 
 REGEX_EMAIL = r"[a-zA-Z0-9._+!#$&%]{1,64}@[a-zA-Z0-9.]*\.[a-zA-Z]{2,3}"
 
+LOGO = (
+    Colors.BRIGHT_RED                         +
+    r"  ___   ___ __ _ _ __ _ _ __  ___ _ _ " + "\n" +
+    r" / -_) (_-</ _| '_/ _` | '_ \/ -_) '_|" + "\n" +
+    r" \___|_/__/\__|_| \__,_| .__/\___|_|  " + "\n" +
+    r"    |___|              |_|            " + "\n" +
+    Colors.RESET
+)
+
 def help_menu():
     print("Usage:\n<url> - website url")
 
@@ -48,7 +57,7 @@ if req.status_code != 200:
 soup = BeautifulSoup(req.text, "html.parser")
 soup_text = soup.get_text()
 
-print(f"{Colors.BOLD}{Colors.UNDERLINE}{Colors.BRIGHT_RED}[e_scraper]{Colors.RESET}\n")
+print(LOGO)
 
 url_protocol = url.split("://")[0]
 url_domain = url.split("://")[1].split("/")[0]
@@ -63,7 +72,7 @@ for link in soup.find_all("a"):
 
 websites = list(set(websites)) # to remove repeated websites
 
-print(f"{Colors.BOLD}{Colors.BRIGHT_MAGENTA}Websites:{Colors.RESET}")
+print(f"{Colors.BOLD}{Colors.BRIGHT_MAGENTA} Websites:{Colors.RESET}")
 
 emails = []
 emails.extend(re.findall(REGEX_EMAIL, soup_text))
@@ -80,12 +89,12 @@ for website in websites:
 
 emails = list(set(emails)) # to remove repeated email addresses
 
-print(f"\n{Colors.BOLD}{Colors.BRIGHT_BLUE}Emails:{Colors.RESET}")
+print(f"\n{Colors.BOLD}{Colors.BRIGHT_BLUE} Emails:{Colors.RESET}")
 
 for i, email in enumerate(emails):
     print(f"  ({Colors.BOLD}{Colors.BRIGHT_BLUE}{i + 1}{Colors.RESET}) {Colors.BRIGHT_BLUE}{email}{Colors.RESET}")
 
-save_emails = input("\nSave emails to file? (Y/n): ")
+save_emails = input("\n Save emails to file? (Y/n): ")
 
 if save_emails.lower() in ["y", "yes"]:
     current_time = time.strftime("%H:%M:%S")
