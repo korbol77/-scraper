@@ -1,3 +1,4 @@
+from commands.commands import Commands
 from colors.colors import Colors
 from bs4 import BeautifulSoup
 import requests
@@ -9,10 +10,10 @@ REGEX_EMAIL = r"[a-zA-Z0-9._+!#$&%]{1,64}@[a-zA-Z0-9.]*\.[a-zA-Z]{2,3}"
 
 LOGO = (
     Colors.BRIGHT_RED                         +
-    r"  ___   ___ __ _ _ __ _ _ __  ___ _ _ " + "\n" +
-    r" / -_) (_-</ _| '_/ _` | '_ \/ -_) '_|" + "\n" +
-    r" \___|_/__/\__|_| \__,_| .__/\___|_|  " + "\n" +
-    r"    |___|              |_|            " + "\n" +
+    r" ___   ___ __ _ _ __ _ _ __  ___ _ _ " + "\n" +
+    r"/ -_) (_-</ _| '_/ _` | '_ \/ -_) '_|" + "\n" +
+    r"\___|_/__/\__|_| \__,_| .__/\___|_|  " + "\n" +
+    r"   |___|              |_|            " + "\n" +
     Colors.RESET
 )
 
@@ -42,17 +43,17 @@ def main():
     valid_url = url.startswith(("https://", "http://"))
 
     if not valid_url:
-        print(f"{Colors.BRIGHT_RED}Url address is not correct!\nEnter a valid url like: https://example.com{Colors.RESET}")
+        print(Commands.Error("Url address is not correct! Enter a valid url like: https://example.com"))
         sys.exit(1)
 
     try:
         req = requests.get(url)
     except:
-        print(f"{Colors.BRIGHT_RED}Error while trying to connect to the website!{Colors.RESET}")
+        print(Commands.Error("Error while trying to connect to the website!"))
         sys.exit(1)
 
     if req.status_code != 200:
-        print(f"{Colors.BRIGHT_RED}Error while scraping the page!{Colors.RESET}")
+        print(Commands.Error("Error while scraping the page!"))
         sys.exit(1)
 
     soup = BeautifulSoup(req.text, "html.parser")
@@ -71,7 +72,7 @@ def main():
             if link_href != url and link_href not in websites:
                 websites.append(link_href)
 
-    print(f"{Colors.BOLD}{Colors.BRIGHT_RED} Websites:{Colors.RESET}")
+    print(f"{Colors.BOLD}{Colors.BRIGHT_RED}Websites:{Colors.RESET}")
 
     emails = []
     emails.extend(re.findall(REGEX_EMAIL, soup_text))
@@ -82,20 +83,20 @@ def main():
 
             emails.extend(website_emails)
 
-            print(f"  [{Colors.BOLD}{Colors.BRIGHT_RED}+{Colors.RESET}] {Colors.BRIGHT_RED}{website}{Colors.RESET}")
+            print(f"[{Colors.BOLD}{Colors.BRIGHT_RED}+{Colors.RESET}] {Colors.BRIGHT_RED}{website}{Colors.RESET}")
         except:
             continue
 
     emails = list(set(emails)) # to remove repeated email addresses
 
-    print(f"\n{Colors.BOLD}{Colors.BRIGHT_BLUE} Emails:{Colors.RESET}")
+    print(f"\n{Colors.BOLD}{Colors.BRIGHT_BLUE}Emails:{Colors.RESET}")
 
     for i, email in enumerate(emails):
-        print(f"  [{Colors.BOLD}{Colors.BRIGHT_BLUE}{i + 1}{Colors.RESET}] {Colors.BRIGHT_BLUE}{email}{Colors.RESET}")
+        print(f"[{Colors.BOLD}{Colors.BRIGHT_BLUE}{i + 1}{Colors.RESET}] {Colors.BRIGHT_BLUE}{email}{Colors.RESET}")
 
-    print(f"\n Scraped total {len(emails)} emails from {len(websites)} sites")
+    print("\n" + Commands.Success(f"Scraped a total of {len(emails)} emails from {len(websites)} sites\n"))
 
-    save_emails = input("\n Save emails to file? (Y/n): ")
+    save_emails = input(Commands.Question("Save emails to file? (Y/n): "))
 
     if save_emails.lower() in ["y", "yes"]:
         current_time = time.strftime("%H:%M:%S")
